@@ -1,0 +1,119 @@
+<mujoco model="Quadruped">
+    <compiler inertiafromgeom="true" angle="degree"/>
+
+    <default>
+        <joint limited="true" damping="1" armature="0"/>
+        <geom condim="1" material="matgeom"/>
+        <motor ctrlrange="-.4 .4" ctrllimited="true"/>
+    </default>
+
+    <option timestep="0.005" iterations="50" tolerance="1e-10" solver="Newton" jacobian="dense" cone="pyramidal"/>
+
+    <size nconmax="1000" njmax="1000" nstack="1000000"/>
+
+    <visual>
+        <map force="0.1" zfar="30"/>
+        <rgba haze="0.15 0.25 0.35 1"/>
+        <quality shadowsize="2048"/>
+        <global offwidth="800" offheight="800"/>
+    </visual>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/> 
+
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>  
+
+        <texture name="texgeom" type="cube" builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>  
+
+        <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+
+        <material name="matgeom" texture="texgeom" texuniform="true" rgba="0.8 0.6 .4 1"/>
+    </asset>
+
+    <worldbody>
+        <geom name="floor" pos="0 0 0" size="0 0 .25" type="plane" material="matplane" condim="3"/>
+
+        <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+        <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+        
+        <light mode="targetbodycom" target="torso" directional="false" diffuse=".8 .8 .8" specular="0.3 0.3 0.3" pos="0 0 4.0" dir="0 0 -1"/>       
+
+        <body name="torso" pos="0 0 2">
+            <freejoint name="root"/>
+            <geom name="torso1" type="box" pos="0 0 0" size="0.75 0.4 0.1" density="100"/>
+
+            <body name="fl_thigh" pos="0.65 0.475 0" >
+                <joint name="fl_hip" type="hinge" pos="0 0 0" axis="0 -1 0" range="-180 180" damping="1" stiffness="5" armature="0.01" />
+                <geom name="fl_thigh1" type="box" fromto="0 0 0 0 -0.01 -0.35" size="0.05" />
+                <body name="fl_shin" pos="0 -0.01 -0.4" >
+                    <joint name="fl_knee" type="hinge" pos="0 0 0.02" axis="0 -1 0" range="-180 180" stiffness="5" armature="0.0060" />
+                    <geom name="fl_shin1" type="box" fromto="0 0 0 0 0 -0.35" size="0.05" />
+                    <body name="fl_foot" pos="0 0 -0.4" >
+                        <joint name="fl_ankle" type="hinge" pos="0 0 0.08" axis="0 1 0" range="-180 180"  stiffness="5" armature="0.0008" />
+                        <geom name="fl_foot_cap" type="box" pos="0.1 0 0" size="0.15 0.05 0.025" />
+                    </body>
+                </body>
+            </body>
+
+            <body name="fr_thigh" pos="0.65 -0.475 0" >
+                <joint name="fr_hip" type="hinge" pos="0 0 0" axis="0 -1 0" range="-180 180" damping="1" stiffness="5" armature="0.01" />
+                <geom name="fr_thigh1" type="box" fromto="0 0 0 0 -0.01 -0.35" size="0.05" />
+                <body name="fr_shin" pos="0 -0.01 -0.4" >
+                    <joint name="fr_knee" type="hinge" pos="0 0 0.02" axis="0 -1 0" range="-180 180" stiffness="5" armature="0.0060" />
+                    <geom name="fr_shin1" type="box" fromto="0 0 0 0 0 -0.35" size="0.05" />
+                    <body name="fr_foot" pos="0 0 -0.4" >
+                        <joint name="fr_ankle" type="hinge" pos="0 0 0.08" axis="0 1 0" range="-180 180"  stiffness="5" armature="0.0008" />
+                        <geom name="fr_foot_cap" type="box" pos="0.1 0 0" size="0.15 0.05 0.025" />
+                    </body>
+                </body>
+            </body>
+
+            <body name="rl_thigh" pos="-0.65 0.475 0" >
+                <joint name="rl_hip" type="hinge" pos="0 0 0" axis="0 -1 0" range="-180 180" damping="1" stiffness="5" armature="0.01" />
+                <geom name="rl_thigh1" type="box" fromto="0 0 0 0 -0.01 -0.35" size="0.05" />
+                <body name="rl_shin" pos="0 -0.01 -0.4" >
+                    <joint name="rl_knee" type="hinge" pos="0 0 0.02" axis="0 -1 0" range="-180 180" stiffness="5" armature="0.0060" />
+                    <geom name="rl_shin1" type="box" fromto="0 0 0 0 0 -0.35" size="0.05" />
+                    <body name="rl_foot" pos="0 0 -0.4" >
+                        <joint name="rl_ankle" type="hinge" pos="0 0 0.08" axis="0 1 0" range="-180 180"  stiffness="5" armature="0.0008" />
+                        <geom name="rl_foot_cap" type="box" pos="0.1 0 0" size="0.15 0.05 0.025" />
+                    </body>
+                </body>
+            </body>
+
+            <body name="rr_thigh" pos="-0.65 -0.475 0" >
+                <joint name="rr_hip" type="hinge" pos="0 0 0" axis="0 -1 0" range="-180 180" damping="1" stiffness="5" armature="0.01" />
+                <geom name="rr_thigh1" type="box" fromto="0 0 0 0 -0.01 -0.35" size="0.05" />
+                <body name="rr_shin" pos="0 -0.01 -0.4" >
+                    <joint name="rr_knee" type="hinge" pos="0 0 0.02" axis="0 -1 0" range="-180 180" stiffness="5" armature="0.0060" />
+                    <geom name="rr_shin1" type="box" fromto="0 0 0 0 0 -0.35" size="0.05" />
+                    <body name="rr_foot" pos="0 0 -0.4" >
+                        <joint name="rr_ankle" type="hinge" pos="0 0 0.08" axis="0 1 0" range="-180 180"  stiffness="5" armature="0.0008" />
+                        <geom name="rr_foot_cap" type="box" pos="0.1 0 0" size="0.15 0.05 0.025" />
+                    </body>
+                </body>
+            </body>
+
+            <camera name="side_follow_camera" euler="75 0 0" pos="0 -10 2.5"/>
+            <camera name="back_follow_camera" euler="0 -75 -90" pos="-5 0 2.5"/>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <position name="fl_hip" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fl_hip" />
+        <position name="fl_knee" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fl_knee" />
+        <position name="fl_ankle" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fl_ankle" />
+
+        <position name="fr_hip" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fr_hip" />
+        <position name="fr_knee" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fr_knee" />
+        <position name="fr_ankle" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="fr_ankle" />
+
+        <position name="rl_hip" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rl_hip" />
+        <position name="rl_knee" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rl_knee" />
+        <position name="rl_ankle" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rl_ankle" />
+
+        <position name="rr_hip" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rr_hip" />
+        <position name="rr_knee" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rr_knee" />
+        <position name="rr_ankle" kp="100" gear="1" ctrlrange="-3.14159265359 3.14159265359" joint="rr_ankle" />
+    </actuator>
+</mujoco>

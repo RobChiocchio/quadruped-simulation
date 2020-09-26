@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+importlib-metadata = "<2,>=0.12" # Fixes dependency conflict with virtualenv/pytest (importlib-metadata)
+#autopep8 = "*" # Code formatter
+flake8 = "*" # Base-linter module
+flake8-quotes = "*" # flake8-extension to lint bad quoting
+flake8-docstrings = "*" # flake8-ext for strict docstring linting
+flake8-builtins = "*" # flake8-ext to check python builtins used as vars etc.
+flake8-blind-except = "*" # flake8-ext to catch blind exception catches
+flake8-use-fstring = "*" # flake8-ext to enforce f-strings
+pep8-naming = "*" # flake8-ext to enforce pep8 naming conventions
+black = "*" # Code formatter
+isort = "*" # Automated import sorting
+pytest = "<6" # Python base-testing library - 6 has dependency conflict with virtualenv (importlib-metadata)
+tox = "*" # Automated and standardized testing in Python
+
+[packages]
+mujoco-py = "<2.1,>=2.0" # Python interface to MuJoCo
+
+[requires]
+python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
