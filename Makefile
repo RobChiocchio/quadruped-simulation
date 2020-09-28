@@ -7,7 +7,7 @@ ifeq (, $(shell which pipenv))
 endif
 
 # Suppress warning if pipenv is started inside .venv
-export PIPENV_VERBOSITY=1
+#export PIPENV_VERBOSITY=1
 # Use relative .venv folder instead of home-folder based
 export PIPENV_VENV_IN_PROJECT=1
 # Ignore existing venvs (required for travis)
