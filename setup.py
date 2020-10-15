@@ -11,11 +11,11 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = 'quadsim'
 DESCRIPTION = 'Quadruped simulation.'
-URL = 'https://github.com/me/myproject' # TODO: set repo URL
+URL = 'https://github.com/swol-kat/simulation'
 EMAIL = 'rmchiocchio@wpi.edu'
 AUTHOR = 'Rob Chiocchio'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
