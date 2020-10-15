@@ -7,7 +7,7 @@ import pybullet as p
 import pybullet_data
 
 if __name__ == "__main__":
-    urdf_path = os.path.abspath("doggo-arm/urdf/doggo-arm.urdf")
+    urdf_path = os.path.abspath("urdfs/doggo-arm/urdf/doggo-arm.urdf")
 
     p.connect(p.GUI)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
