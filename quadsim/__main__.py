@@ -1,71 +1,44 @@
 import os
 import sys
+import time
 
-import glfw
-import mujoco_py
 import numpy as np
+import pybullet as p
+import pybullet_data
 
-mj_path, _ = mujoco_py.utils.discover_mujoco()
-model = mujoco_py.load_model_from_path("quadruped.xml")
-sim = mujoco_py.MjSim(model)
-viewer = mujoco_py.MjViewer(sim)
+if __name__ == "__main__":
+    urdf_path = os.path.abspath("doggo-arm/urdf/doggo-arm.urdf")
 
-actions = {
-    "stand": [30, -60, -30, 30, -60, -30, 30, -60, -30, 30, -60, -30],
-    "step_lfrr": [45, -90, -15, 30, -60, -45, 30, -60, -45, 45, -90, -15],
-    "step_rflr": [30, -60, -45, 45, -90, -15, 45, -90, -15, 30, -60, -45],
-    "crouch": [60, -120, -45, 60, -120, -45, 60, -120, -45, 60, -120, -45],
-    "straight": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-}
+    p.connect(p.GUI)
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())
+    p.setGravity(0, 0, -9.81)
+    dt = 1./240.
 
+    plane = p.loadURDF("plane.urdf")
+    robot = p.loadURDF(urdf_path, [0,0,0.001], useFixedBase=True)
+    #robot = p.loadURDF("mini_cheetah/mini_cheetah.urdf",[0,0,1], useFixedBase=False)
 
-def set_action(sim, action):
-    if sim.data.ctrl is not None:
-        for i in range(len(action)):
-            sim.data.ctrl[i] = np.deg2rad(action[i])
+    dof = p.getNumJoints(robot)
 
-
-def key_callback(window, key, scancode, action, mods):
-    if action != glfw.RELEASE:
-        return
-    elif key == glfw.KEY_HOME:
-        sim.reset()
-        set_action(sim, actions["stand"])
-    elif key == glfw.KEY_0:
-        set_action(sim, actions["stand"])
-    elif key == glfw.KEY_MINUS:
-        set_action(sim, actions["step_lfrr"])
-    elif key == glfw.KEY_EQUAL:
-        set_action(sim, actions["step_rflr"])
-    elif key == glfw.KEY_9:
-        set_action(sim, actions["crouch"])
-    elif key == glfw.KEY_8:
-        set_action(sim, actions["straight"])
-    else:
-        viewer.key_callback(window, key, scancode, action, mods)
+    joint_positions = [0, 0, 0]*dof
+    sliders = []
+    
+    for j in range(dof):
+        joint_info = p.getJointInfo(robot, j)
+        print(joint_info)
+        sliders.append(p.addUserDebugParameter(f"Joint {j}", joint_info[8], joint_info[9], 0))
+        #p.setJointMotorControl2(robot, j, p.VELOCITY_CONTROL, force=0)
+        p.resetJointState(robot, j, joint_positions[j])  
+        p.setJointMotorControl(robot, j, p.POSITION_CONTROL, joint_positions[j])
 
 
-glfw.set_key_callback(viewer.window, key_callback)
+    while True:
+        for j in range(dof):
+            joint_positions[j] = p.readUserDebugParameter(sliders[j])
+            p.setJointMotorControl(robot, j, p.POSITION_CONTROL, joint_positions[j])
 
-# sim.data.ctrl[0] = np.deg2rad(30) # fl_hip
-# sim.data.ctrl[1] = np.deg2rad(-60) # fl_knee
-# sim.data.ctrl[2] = np.deg2rad(-30) # fl_ankle
+        p.stepSimulation()
+        time.sleep(dt)
 
-# sim.data.ctrl[3] = np.deg2rad(30) # fr_hip
-# sim.data.ctrl[4] = np.deg2rad(-60) # fr_knee
-# sim.data.ctrl[5] = np.deg2rad(-30) # fr_ankle
-
-# sim.data.ctrl[6] = np.deg2rad(30) # rl_hip
-# sim.data.ctrl[7] = np.deg2rad(-60) # rl_knee
-# sim.data.ctrl[8] = np.deg2rad(-30) # rl_ankle
-
-# sim.data.ctrl[9] = np.deg2rad(30) # rr_hip
-# sim.data.ctrl[10] = np.deg2rad(-60) # rr_knee
-# sim.data.ctrl[11] = np.deg2rad(-30) # rr_ankle
-
-set_action(sim, actions["stand"])
-
-while True:
-    sim.step()
-    # sim.forward()
-    viewer.render()
+    p.disconnect()
+    sys.exit(0)
