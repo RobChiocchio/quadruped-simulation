@@ -1,0 +1,3 @@
+[submodule "urdfs"]
+	path = urdfs
+	url = git@github.com:swol-kat/urdfs.git
