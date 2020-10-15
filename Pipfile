@@ -19,7 +19,9 @@ pytest = "<6" # Python base-testing library - 6 has dependency conflict with vir
 tox = "*" # Automated and standardized testing in Python
 
 [packages]
-mujoco-py = "<2.1,>=2.0" # Python interface to MuJoCo
+klampt = "*" # Physics engine
+pyopengl = "*" # For klampt rendering
+pyqt5 = "*" # For klampt rendering
 
 [requires]
 python_version = "3.6"
