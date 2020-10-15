@@ -22,7 +22,7 @@ VERSION = $(shell python3 setup.py --version)
 NAME = $(shell python3 setup.py --name)
 
 
-all: clean venv run
+all: clean venv sync run
 
 run:
 	@echo Run the script
@@ -62,6 +62,6 @@ reformat: isort
 build: test coverage isort reformat lint
 	@echo NOT IMPLEMENTED: Build
 
-update-udrfs:
-	@echo Update git submodule for UDRFs
+sync:
+	@echo Sync git submodule for UDRFs
 	git submodule sync --recursive
