@@ -19,7 +19,7 @@ pytest = "<6" # Python base-testing library - 6 has dependency conflict with vir
 tox = "*" # Automated and standardized testing in Python
 
 [packages]
-mujoco-py = "<2.1,>=2.0" # Python interface to MuJoCo
+pybullet = "*" # Simulation environment
 
 [requires]
 python_version = "3.6"
