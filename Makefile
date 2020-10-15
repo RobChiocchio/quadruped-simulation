@@ -61,3 +61,7 @@ reformat: isort
 
 build: test coverage isort reformat lint
 	@echo NOT IMPLEMENTED: Build
+
+update-udrfs:
+	@echo Update git submodule for UDRFs
+	git submodule update --remote --recursive
