@@ -22,7 +22,7 @@ VERSION = $(shell python3 setup.py --version)
 NAME = $(shell python3 setup.py --name)
 
 
-all: clean venv sync run
+all: clean venv sync
 
 run:
 	@echo Run the script
