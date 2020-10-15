@@ -2,18 +2,10 @@ import os
 import sys
 import time
 
-import klampt
+from klampt import *
 from klampt import vis
+from klampt.vis.glrobotprogram import GLSimulationPlugin
 import numpy as np
-
-#mj_path, _ = mujoco_py.utils.discover_mujoco()
-#model = mujoco_py.load_model_from_path("quadruped.xml")
-#sim = mujoco_py.MjSim(model)
-#viewer = mujoco_py.MjViewer(sim)
-
-world = klampt.WorldModel()
-vis.add("world", world)
-vis.show()
 
 actions = {
     "stand": [30, -60, -30, 30, -60, -30, 30, -60, -30, 30, -60, -30],
@@ -31,14 +23,20 @@ def set_action(sim, action):
 
 #set_action(sim, actions["stand"])
 
-while True:
-    #sim.step()
-    # sim.forward()
-    #viewer.render()
-    vis.lock()
+if __name__ == "__main__":
+    urdf_path = os.path.abspath("doggo-arm/urdf/doggo-arm.urdf")
 
-    vis.unlock()
-    time.sleep(0.1)
+    world = WorldModel()
 
+    if os.path.exists(urdf_path):
+        world.loadRobot(urdf_path)
+        #controller = sim.getController()
 
-vis.show(False)
+    sim = Simulator(world)
+    vis.add("world", world)
+    
+    viewer = GLSimulationPlugin(world)
+
+    vis.run(viewer)
+
+    sys.exit(0)
