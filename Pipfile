@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-importlib-metadata = "<2,>=0.12" # Fixes dependency conflict with virtualenv/pytest (importlib-metadata)
+#importlib-metadata = "<2,>=0.12" # Fixes dependency conflict with virtualenv/pytest (importlib-metadata)
 #autopep8 = "*" # Code formatter
 flake8 = "*" # Base-linter module
 flake8-quotes = "*" # flake8-extension to lint bad quoting
@@ -20,6 +20,10 @@ tox = "*" # Automated and standardized testing in Python
 
 [packages]
 pybullet = "*" # Simulation environment
+numpy = "*"
+tensorflow = "==1.14" # Using TensorFlow v1 because stable-baselines does not support v2
+gym = "*" # OpenAI Gym
+stable-baselines = "*" # Base set of RL algorithm implementations
 
 [requires]
 python_version = "3.6"

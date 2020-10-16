@@ -14,7 +14,7 @@ if __name__ == "__main__":
     p.setGravity(0, 0, -9.81)
     dt = 1./240.
 
-    plane = p.loadURDF("plane.urdf")
+    plane = p.loadURDF("plane.urdf", [0,0,-0.001])
     robot = p.loadURDF(urdf_path, [0,0,0.001], useFixedBase=True)
     #robot = p.loadURDF("mini_cheetah/mini_cheetah.urdf",[0,0,1], useFixedBase=False)
 

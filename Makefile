@@ -64,4 +64,5 @@ build: test coverage isort reformat lint
 
 sync:
 	@echo Sync git submodule for UDRFs
+	git update --remote --recursive
 	git submodule sync --recursive
