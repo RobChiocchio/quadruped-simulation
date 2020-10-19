@@ -57,7 +57,7 @@ build: test coverage isort reformat lint ### NOT IMPLEMENTED: BUILD ###
 	@echo NOT IMPLEMENTED: Build
 
 sync: ### Sync git submodule for UDRFs ###
-	git update --remote --recursive
+	git submodule update --remote --recursive
 	git submodule sync --recursive
 
 help: ### Prints this help message ###
