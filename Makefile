@@ -20,49 +20,47 @@ export LANG=C.UTF-8
 # Current package parameters
 VERSION = $(shell python3 setup.py --version)
 NAME = $(shell python3 setup.py --name)
-
+# Help REGEX
+#HELP_REGEX = "(\S*:).*(\s###\s)(.*)(?=\s###)"
 
 all: clean venv sync
 
-run:
-	@echo Run the script
+run: ### Run the script ###
 	pipenv run python3 $(NAME)
 
-venv: clean
-	@echo Initialize virtualenv, i.e., install required packages etc.
+venv: clean ### Initialize virtualenv, i.e., install required packages etc. ###
 	LD_LIBRARY_PATH=$HOME/.mujoco/mujoco200/bin
 	pipenv --three install --dev
 
-clean:
-	@echo Clean project
+clean: ### Clean project ###
 	rm -rfv .venv .tox .egg build dist src
 	find . -type d -name ".ropeproject" -exec rm -rf "{}" +;
 	find . -type d -name ".pytest_cache" -exec rm -rf "{}" +;
 	find . -type d -name "__pycache__" -exec rm -rf "{}" +;
 
-test:
-	@echo Run all tests
+test: ### Run all tests ###
 	pipenv run pytest tests
 
-coverage:
-	@echo NOT IMPLEMENTED: Run test coverage checks
+coverage: ### NOT IMPLEMENTED: Run test coverage checks ###
+	@echo NOT IMPLEMENTED: codecov
 
-isort:
-	@echo Check for incorrectly sorted imports
+isort: ### Check for incorrectly sorted imports ###
 	pipenv run isort $(NAME) tests
 
-lint:
-	@echo Run code formatting checks
+lint: ### Run code formatting checks ###
 	pipenv run flake8 $(NAME) tests
 
-reformat: isort
-	@echo Reformat code with Black
+reformat: isort ### Reformat code with Black ###
 	pipenv run black $(NAME) tests
 
-build: test coverage isort reformat lint
+build: test coverage isort reformat lint ### NOT IMPLEMENTED: BUILD ###
 	@echo NOT IMPLEMENTED: Build
 
-sync:
-	@echo Sync git submodule for UDRFs
+sync: ### Sync git submodule for UDRFs ###
 	git update --remote --recursive
 	git submodule sync --recursive
+
+help: ### Prints this help message ###
+	@echo WORK IN PROGRESS
+	@echo Syntax: make [command]
+	grep -ahoP "(\S*:).*(\s###\s)(.*)(?=\s###)" $(MAKEFILE_LIST)
