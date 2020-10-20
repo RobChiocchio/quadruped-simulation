@@ -74,17 +74,17 @@ class SwolKat(object):
             that its walking gait is clearer to visualize.
           kd_for_pd_controllers: kd value for the pd controllers of the motors.
         """
-        self.num_motors = 8
-        self.num_legs = int(self.num_motors / 2)
+        self.num_motors = 12
+        self.num_legs = int(self.num_motors / 3)
         self._pybullet_client = pybullet_client
         self._urdf_root = urdf_root
         self._self_collision_enabled = self_collision_enabled
         self._motor_velocity_limit = motor_velocity_limit
         self._pd_control_enabled = pd_control_enabled
-        self._motor_direction = [-1, -1, -1, -1, 1, 1, 1, 1]
+        self._motor_direction = [-1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1]
         self._observed_motor_torques = np.zeros(self.num_motors)
         self._applied_motor_torques = np.zeros(self.num_motors)
-        self._max_force = 3.5
+        self._max_force = 7
         self._accurate_motor_model_enabled = accurate_motor_model_enabled
         self._torque_control_enabled = torque_control_enabled
         self._motor_overheat_protection = motor_overheat_protection
@@ -123,7 +123,7 @@ class SwolKat(object):
         self._joint_name_to_id = {}
         for i in range(num_joints):
             joint_info = self._pybullet_client.getJointInfo(self.quadruped, i)
-            if (joint_info[2] != 4) and (joint_info[16] != -1):
+            if (joint_info[2] != 4): # and (joint_info[16] != -1)
                 self._joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
 
     def _BuildMotorIdList(self):
@@ -211,14 +211,14 @@ class SwolKat(object):
 
         for j in range(self._pybullet_client.getNumJoints(self.quadruped)):
             joint_info = self._pybullet_client.getJointInfo(self.quadruped, j)
-            if (joint_info[2] != 4) and (joint_info[16] != -1):
+            if (joint_info[2] != 4): # and (joint_info[16] != -1)
                 self._pybullet_client.resetJointState(self.quadruped, j, 0)
                 self._pybullet_client.setJointMotorControl2(
                     bodyIndex=self.quadruped,
                     jointIndex=j,
                     controlMode=self._pybullet_client.VELOCITY_CONTROL,
                     targetVelocity=0,
-                    force=100,
+                    force=self._max_force,
                 )
                 
 
