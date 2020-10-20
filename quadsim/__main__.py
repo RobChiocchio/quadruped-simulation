@@ -6,39 +6,38 @@ import numpy as np
 import pybullet as p
 import pybullet_data
 
+from quadsim.envs.swol_kat_gym_env import SwolKatEnv
+
 if __name__ == "__main__":
-    urdf_path = os.path.abspath("urdfs/doggo-arm/urdf/doggo-arm.urdf")
+    env = SwolKatEnv(render=True)
+    env.render(mode="human")
 
-    p.connect(p.GUI)
-    p.setAdditionalSearchPath(pybullet_data.getDataPath())
-    p.setGravity(0, 0, -9.81)
-    dt = 1./240.
+    dof = env._pybullet_client.getNumJoints(env.minitaur.quadruped)
 
-    plane = p.loadURDF("plane.urdf")
-    robot = p.loadURDF(urdf_path, [0,0,0.001], useFixedBase=True)
-    #robot = p.loadURDF("mini_cheetah/mini_cheetah.urdf",[0,0,1], useFixedBase=False)
-
-    dof = p.getNumJoints(robot)
-
-    joint_positions = [0, 0, 0]*dof
     sliders = []
     
     for j in range(dof):
-        joint_info = p.getJointInfo(robot, j)
+        joint_info = env._pybullet_client.getJointInfo(env.minitaur.quadruped, j)
         print(joint_info)
-        sliders.append(p.addUserDebugParameter(f"Joint {j}", joint_info[8], joint_info[9], 0))
-        #p.setJointMotorControl2(robot, j, p.VELOCITY_CONTROL, force=0)
-        p.resetJointState(robot, j, joint_positions[j])  
-        p.setJointMotorControl(robot, j, p.POSITION_CONTROL, joint_positions[j])
+        if (joint_info[2] != 4): # and (joint_info[16] != -1)
+            sliders.append(env._pybullet_client.addUserDebugParameter(f"{j} - {joint_info[1]}", -np.pi/2, np.pi/2, 0))
+            #p.setJointMotorControl2(robot, j, p.VELOCITY_CONTROL, force=0)
+            #env._pybullet_client.resetJointState(env.minitaur.quadruped, j, joint_positions[j])  
+            #env._pybullet_client.setJointMotorControl(env.minitaur.quadruped, j, env._pybullet_client.POSITION_CONTROL, joint_positions[j])
 
+    joint_positions = [0]*len(sliders)
 
     while True:
-        for j in range(dof):
-            joint_positions[j] = p.readUserDebugParameter(sliders[j])
-            p.setJointMotorControl(robot, j, p.POSITION_CONTROL, joint_positions[j])
+        for j in range(len(sliders)):
+            joint_positions[j] = env._pybullet_client.readUserDebugParameter(sliders[j])
+            #env._pybullet_client.setJointMotorControl(env.minitaur.quadruped, j, p.POSITION_CONTROL, joint_positions[j])
 
-        p.stepSimulation()
+        env.step(joint_positions)
+        env.render(mode='human')
+        env._is_render = True # DEBUG
+        dt = 1. / 240.
         time.sleep(dt)
 
-    p.disconnect()
+    #p.disconnect()
+    env.close()
     sys.exit(0)
