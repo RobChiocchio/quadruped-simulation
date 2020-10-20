@@ -4,6 +4,7 @@
 # You can run it using: python -m pybullet_envs.stable_baselines.train --algo td3 --env HalfCheetahBulletEnv-v0
 # Author: Antonin RAFFIN
 # MIT License
+import os
 import argparse
 
 import pybullet_envs
@@ -28,6 +29,7 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--save-freq', help='Save the model every n steps (if negative, no checkpoint)',
                     default=-1, type=int)
+    parser.add_argument('--load-best', help='Continues training off of best model', action='store_true', default=False)
     args = parser.parse_args()
 
     env_id = args.env
@@ -66,6 +68,12 @@ if __name__ == '__main__':
     }[args.algo]
 
     model = algo('MlpPolicy', env, verbose=1, **hyperparams)
+
+    if args.load_best:
+        print("Loading best model")
+        model = SAC.load(os.path.join(save_path, 'best_model.zip'))
+        model.set_env(env)
+
     try:
         model.learn(n_timesteps, callback=callbacks)
     except KeyboardInterrupt:

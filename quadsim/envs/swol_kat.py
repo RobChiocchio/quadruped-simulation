@@ -8,7 +8,7 @@ import numpy as np
 
 from pybullet_envs.bullet import motor
 
-INIT_POSITION = [0, 0, 0.2]
+INIT_POSITION = [0, 0, 1]
 INIT_ORIENTATION = [0, 0, 0, 1]
 KNEE_CONSTRAINT_POINT_RIGHT = [0, 0.005, 0.2]
 KNEE_CONSTRAINT_POINT_LEFT = [0, 0.01, 0.2]
@@ -26,7 +26,7 @@ MOTOR_NAMES = [
     "motor_back_rightR_joint",
 ]
 LEG_LINK_ID = [2, 3, 5, 6, 8, 9, 11, 12, 15, 16, 18, 19, 21, 22, 24, 25]
-MOTOR_LINK_ID = [1, 4, 7, 10, 14, 17, 20, 23]
+MOTOR_LINK_ID = [1, 2, 5, 6, 9, 10, 13, 14]
 FOOT_LINK_ID = [3, 6, 9, 12, 16, 19, 22, 25]
 BASE_LINK_ID = -1
 
@@ -123,11 +123,12 @@ class SwolKat(object):
         self._joint_name_to_id = {}
         for i in range(num_joints):
             joint_info = self._pybullet_client.getJointInfo(self.quadruped, i)
-            self._joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
+            if (joint_info[2] != 4) and (joint_info[16] != -1):
+                self._joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
 
     def _BuildMotorIdList(self):
         self._motor_id_list = [
-            self._joint_name_to_id[motor_name] for motor_name in MOTOR_NAMES
+            self._joint_name_to_id[motor_name] for motor_name in self._joint_name_to_id
         ]
 
     def Reset(self, reload_urdf=True):
@@ -140,13 +141,13 @@ class SwolKat(object):
         if reload_urdf:
             if self._self_collision_enabled:
                 self.quadruped = self._pybullet_client.loadURDF(
-                    "%s/quadruped/minitaur.urdf" % self._urdf_root,
+                    "%s/mini_cheetah/mini_cheetah.urdf" % self._urdf_root,
                     INIT_POSITION,
                     flags=self._pybullet_client.URDF_USE_SELF_COLLISION,
                 )
             else:
                 self.quadruped = self._pybullet_client.loadURDF(
-                    "%s/quadruped/minitaur.urdf" % self._urdf_root, INIT_POSITION
+                    "%s/mini_cheetah/mini_cheetah.urdf" % self._urdf_root, INIT_POSITION
                 )
             self._BuildJointNameToIdDict()
             self._BuildMotorIdList()
@@ -205,8 +206,21 @@ class SwolKat(object):
         Args:
           add_constraint: Whether to add a constraint at the joints of two feet.
         """
-        for i in range(self.num_legs):
-            self._ResetPoseForLeg(i, add_constraint)
+        #for i in range(self.num_legs):
+        #    self._ResetPoseForLeg(i, add_constraint)
+
+        for j in range(self._pybullet_client.getNumJoints(self.quadruped)):
+            joint_info = self._pybullet_client.getJointInfo(self.quadruped, j)
+            if (joint_info[2] != 4) and (joint_info[16] != -1):
+                self._pybullet_client.resetJointState(self.quadruped, j, 0)
+                self._pybullet_client.setJointMotorControl2(
+                    bodyIndex=self.quadruped,
+                    jointIndex=j,
+                    controlMode=self._pybullet_client.VELOCITY_CONTROL,
+                    targetVelocity=0,
+                    force=100,
+                )
+                
 
     def _ResetPoseForLeg(self, leg_id, add_constraint):
         """Reset the initial pose for the leg.

@@ -59,14 +59,14 @@ class SwolKatEnv(gym.Env):
         drift_weight=0.0,
         distance_limit=float("inf"),
         observation_noise_stdev=0.0,
-        self_collision_enabled=True,
+        self_collision_enabled=False,
         motor_velocity_limit=np.inf,
         pd_control_enabled=False,  # not needed to be true if accurate motor model is enabled (has its own better PD)
-        leg_model_enabled=True,
-        accurate_motor_model_enabled=True,
+        leg_model_enabled=False,
+        accurate_motor_model_enabled=False,
         motor_kp=1.0,
         motor_kd=0.02,
-        torque_control_enabled=False,
+        torque_control_enabled=True,
         motor_overheat_protection=True,
         hard_reset=True,
         on_rack=False,
@@ -158,7 +158,7 @@ class SwolKatEnv(gym.Env):
         self.reset()
         observation_high = self.minitaur.GetObservationUpperBound() + OBSERVATION_EPS
         observation_low = self.minitaur.GetObservationLowerBound() - OBSERVATION_EPS
-        action_dim = 8
+        action_dim = NUM_MOTORS
         action_high = np.array([self._action_bound] * action_dim)
         self.action_space = spaces.Box(-action_high, action_high, dtype=np.float32)
         self.observation_space = spaces.Box(
@@ -185,7 +185,7 @@ class SwolKatEnv(gym.Env):
             self._pybullet_client.configureDebugVisualizer(
                 self._pybullet_client.COV_ENABLE_PLANAR_REFLECTION, 0
             )
-            self._pybullet_client.setGravity(0, 0, -10)
+            self._pybullet_client.setGravity(0, 0, -9.81)
             acc_motor = self._accurate_motor_model_enabled
             motor_protect = self._motor_overheat_protection
             self.minitaur = swol_kat.SwolKat(
@@ -218,7 +218,7 @@ class SwolKatEnv(gym.Env):
         if not self._torque_control_enabled:
             for _ in range(100):
                 if self._pd_control_enabled or self._accurate_motor_model_enabled:
-                    self.minitaur.ApplyAction([math.pi / 2] * 8)
+                    self.minitaur.ApplyAction([math.pi / 2] * NUM_MOTORS)
                 self._pybullet_client.stepSimulation()
         return self._noisy_observation()
 
@@ -318,7 +318,7 @@ class SwolKatEnv(gym.Env):
         rgb_array = rgb_array[:, :, :3]
         return rgb_array
 
-    def get_minitaur_motor_angles(self):
+    def get_motor_angles(self):
         """Get the minitaur's motor angles.
 
         Returns:
@@ -331,7 +331,7 @@ class SwolKatEnv(gym.Env):
             ]
         )
 
-    def get_minitaur_motor_velocities(self):
+    def get_motor_velocities(self):
         """Get the minitaur's motor velocities.
 
         Returns:
@@ -344,7 +344,7 @@ class SwolKatEnv(gym.Env):
             ]
         )
 
-    def get_minitaur_motor_torques(self):
+    def get_motor_torques(self):
         """Get the minitaur's motor torques.
 
         Returns:
@@ -357,7 +357,7 @@ class SwolKatEnv(gym.Env):
             ]
         )
 
-    def get_minitaur_base_orientation(self):
+    def get_base_orientation(self):
         """Get the minitaur's base orientation, represented by a quaternion.
 
         Returns:

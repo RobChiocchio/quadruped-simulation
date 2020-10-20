@@ -15,8 +15,11 @@ if __name__ == "__main__":
     dt = 1./240.
 
     plane = p.loadURDF("plane.urdf", [0,0,-0.001])
-    robot = p.loadURDF(urdf_path, [0,0,0.001], useFixedBase=True)
-    #robot = p.loadURDF("mini_cheetah/mini_cheetah.urdf",[0,0,1], useFixedBase=False)
+    #robot = p.loadURDF(urdf_path, [0,0,0.001], useFixedBase=True)
+    robot = p.loadURDF("mini_cheetah/mini_cheetah.urdf",[0,0,1], useFixedBase=False)
+    #robot = p.loadURDF("quadruped/minitaur.urdf")
+
+    print(robot)
 
     dof = p.getNumJoints(robot)
 
@@ -26,7 +29,7 @@ if __name__ == "__main__":
     for j in range(dof):
         joint_info = p.getJointInfo(robot, j)
         print(joint_info)
-        sliders.append(p.addUserDebugParameter(f"Joint {j}", joint_info[8], joint_info[9], 0))
+        sliders.append(p.addUserDebugParameter(f"{j} - {joint_info[1]}", joint_info[9], joint_info[8], 0))
         #p.setJointMotorControl2(robot, j, p.VELOCITY_CONTROL, force=0)
         p.resetJointState(robot, j, joint_positions[j])  
         p.setJointMotorControl(robot, j, p.POSITION_CONTROL, joint_positions[j])
