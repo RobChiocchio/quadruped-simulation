@@ -65,3 +65,4 @@ help: ### Prints this help message ###
 	@echo Targets:
 	@IFS=$$"\n"; \
 	grep -ahoP "(\S*:).*(\s###\s)(.*)(?=\s###)" $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?### "}; {printf "\t%-20s %s\n", $$1, $$2}'
+	@echo $(NAME) v$(VERSION)
