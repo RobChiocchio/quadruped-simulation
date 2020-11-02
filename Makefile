@@ -61,6 +61,7 @@ sync: ### Sync git submodule for UDRFs ###
 	git submodule sync --recursive
 
 help: ### Prints this help message ###
-	@echo WORK IN PROGRESS
-	@echo Syntax: make [command]
-	grep -ahoP "(\S*:).*(\s###\s)(.*)(?=\s###)" $(MAKEFILE_LIST)
+	@echo Syntax: make [target]
+	@echo Targets:
+	@IFS=$$"\n"; \
+	grep -ahoP "(\S*:).*(\s###\s)(.*)(?=\s###)" $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?### "}; {printf "\t%-20s %s\n", $$1, $$2}'
